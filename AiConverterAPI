@@ -1,0 +1,29 @@
+using System;
+using System.IO;
+using Microsoft.AI.TextAnalytics;
+
+namespace ArticleConversionAPI
+{
+    public class ArticleConverter
+    {
+        private readonly ITextAnalyticsClient _textAnalyticsClient;
+
+        public ArticleConverter()
+        {
+            _textAnalyticsClient = new TextAnalyticsClient(new ApiKeyServiceClientCredentials("6d8ecc07-88e4-4c1c-9d65-a32925627780"));
+        }
+
+        public string ConvertArticle(string article)
+        {
+            var result = _textAnalyticsClient.KeyPhrases(new MultiLanguageBatchInput(
+                new List<MultiLanguageInput>
+                {
+                    new MultiLanguageInput("en", "0", article)
+                }));
+
+            var keyPhrases = result.Documents[0].KeyPhrases;
+
+            return string.Join(" ", keyPhrases);
+        }
+    }
+}
